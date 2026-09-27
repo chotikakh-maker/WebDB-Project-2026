@@ -15,8 +15,6 @@ Route::get('/', function () {
 
 Route::redirect('/dashboard', '/');
 
-Route::get('/movies/{id}', [MovieController::class, 'show'])->name('movies.show');
-
 // กดส่งรีวิว (ต้องล็อกอิน)
 Route::middleware(['auth'])->group(function () {
     Route::post('/movies/{id}/reviews', [ReviewController::class, 'store'])->name('reviews.store');
@@ -37,3 +35,5 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/movies/create', [MovieController::class, 'create'])->name('movies.create');
     Route::post('/movies', [MovieController::class, 'store'])->name('movies.store.user'); // รับข้อมูล POST
 });
+
+Route::get('/movies/{id}', [MovieController::class, 'show'])->name('movies.show');
