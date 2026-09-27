@@ -2,16 +2,14 @@
 
 namespace App\Actions\Fortify;
 
-use App\Concerns\PasswordValidationRules;
-use App\Concerns\ProfileValidationRules;
 use App\Models\User;
+use App\Models\Role;
+use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
 use Laravel\Fortify\Contracts\CreatesNewUsers;
 
 class CreateNewUser implements CreatesNewUsers
 {
-    use PasswordValidationRules, ProfileValidationRules;
-
     /**
      * Validate and create a newly registered user.
      *
@@ -19,15 +17,22 @@ class CreateNewUser implements CreatesNewUsers
      */
     public function create(array $input): User
     {
+        // ตรวจสอบข้อมูลโดยไม่ใช้ Trait ที่มีปัญหา
         Validator::make($input, [
-            ...$this->profileRules(),
-            'password' => $this->passwordRules(),
+            'name' => ['required', 'string', 'max:255'],
+            'email' => ['required', 'string', 'email', 'max:255', 'unique:users'],
+            'password' => ['required', 'string', 'min:8', 'confirmed'],
         ])->validate();
 
+        // ดึงสิทธิ์ User มาเตรียมไว้
+        $userRole = Role::where('name', 'User')->first();
+
+        // บันทึกลงฐานข้อมูลพร้อมยัด Role ID ให้เลย
         return User::create([
             'name' => $input['name'],
             'email' => $input['email'],
-            'password' => $input['password'],
+            'password' => Hash::make($input['password']),
+            'role_id' => $userRole ? $userRole->id : 2,
         ]);
     }
 }
