@@ -40,8 +40,9 @@
         const genres = movie.genres ? movie.genres.map(g => `<span class="bg-gray-800 text-gray-300 border border-gray-700 text-xs px-2 py-1 rounded">${g.name}</span>`).join(' ') : '';
         const posterUrl = movie.poster_image ? `/storage/${movie.poster_image}` : 'https://images.unsplash.com/photo-1440404653325-ab127d49abc1?q=80&w=400&h=600&fit=crop';
         
+        // เปลี่ยนจาก <div class="bg-secondary..."> เป็น <a href="/movies/${movie.id}" class="bg-secondary...">
         return `
-            <div class="bg-secondary rounded-lg overflow-hidden border border-gray-800 hover:border-accent transition-colors duration-300 cursor-pointer flex flex-col">
+            <a href="/movies/${movie.id}" class="bg-secondary rounded-lg overflow-hidden border border-gray-800 hover:border-accent transition-colors duration-300 cursor-pointer flex flex-col block">
                 <div class="relative h-[350px]">
                     <img src="${posterUrl}" alt="${movie.title}" class="w-full h-full object-cover">
                 </div>
@@ -52,7 +53,7 @@
                     </div>
                     <div class="mt-4 flex flex-wrap gap-2">${genres}</div>
                 </div>
-            </div>
+            </a>
         `;
     };
 

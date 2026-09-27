@@ -4,16 +4,36 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Admin\MovieManagerController;
 use App\Http\Controllers\Admin\AnalyticsController;
 use App\Http\Controllers\Api\DataFetchController;
-use App\Http\Middleware\RoleCheckMiddleware; // <-- 1. นำเข้าไฟล์ Middleware เข้ามา
+use App\Http\Middleware\RoleCheckMiddleware;
+use App\Http\Controllers\ReviewController;
+use App\Http\Controllers\MovieController; 
 
 Route::get('/', function () { 
     return view('home'); 
 })->name('home');
 
+
+Route::redirect('/dashboard', '/');
+
+Route::get('/movies/{id}', [MovieController::class, 'show'])->name('movies.show');
+
+// กดส่งรีวิว (ต้องล็อกอิน)
+Route::middleware(['auth'])->group(function () {
+    Route::post('/movies/{id}/reviews', [ReviewController::class, 'store'])->name('reviews.store');
+    // ... (เส้นทาง movies.create เดิมที่มีอยู่แล้ว)
+});
+
+Route::middleware(['auth'])->group(function () {
+    Route::get('/movies/create', function () {
+        return view('movies.create');
+    })->name('movies.create');
+});
+
 Route::get('/api/v1/search', [DataFetchController::class, 'search']);
 
-// 2. เปลี่ยนคำว่า 'role' เป็น RoleCheckMiddleware::class
-Route::middleware(['auth', RoleCheckMiddleware::class . ':Super Admin'])->prefix('admin')->name('admin.')->group(function () {
-    Route::get('/analytics', [AnalyticsController::class, 'report'])->name('analytics');
-    Route::post('/movies/store', [MovieManagerController::class, 'store'])->name('movies.store');
+
+// โซนสำหรับผู้ใช้ที่ล็อกอินแล้ว
+Route::middleware(['auth'])->group(function () {
+    Route::get('/movies/create', [MovieController::class, 'create'])->name('movies.create');
+    Route::post('/movies', [MovieController::class, 'store'])->name('movies.store.user'); // รับข้อมูล POST
 });

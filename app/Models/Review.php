@@ -4,7 +4,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class Review extends Model
 {
-    protected $fillable = ['user_id', 'movie_id', 'rating', 'comment', 'is_approved'];
+    protected $fillable = ['user_id', 'movie_id', 'rating', 'comment', 'is_approved', 'is_spoiler'];
 
     public function user() {
         return $this->belongsTo(User::class);
@@ -13,4 +13,6 @@ class Review extends Model
     public function movie() {
         return $this->belongsTo(Movie::class);
     }
+
+    
 }
